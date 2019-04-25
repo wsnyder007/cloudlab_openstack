@@ -4472,12 +4472,9 @@ openstack server create --flavor m1.medium --security-group $security_id --image
 
 echo "1. Beginning Zun Database Setup"
 
-mysql
-
-CREATE DATABASE Zun;
-GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'%' IDENTIFIED BY 'password';
-exit
+mysql -uroot -p < CREATE DATABASE Zun;
+mysql -uroot -p < GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'localhost' IDENTIFIED BY 'password';
+mysql -uroot -p < GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'%' IDENTIFIED BY 'password';
 
 echo "Zun Database Created"
 echo "2-3. Setting Up Zun User Credentials"
@@ -4512,8 +4509,7 @@ apt-get install python-pip git -y
 
 echo "3. Installing Zun"
 
-cd /var/lib/zun
-git clone https://git.openstack.org/openstack/zun.git
+git clone https://git.openstack.org/openstack/zun.git /var/lib/zun
 chown -R zun:zun zun
 cd zun
 pip install -r requirements.txt
