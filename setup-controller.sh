@@ -4470,68 +4470,68 @@ port_id=`openstack port list -f value | grep testport3 | cut -d' ' -f 1`
 # See https://docs.openstack.org/mitaka/install-guide-ubuntu/launch-instance-selfservice.html
 openstack server create --flavor m1.medium --security-group $security_id --image OL7 --nic port-id=$port_id headnode
 
-echo "1. Beginning Zun Database Setup"
+#echo "1. Beginning Zun Database Setup"
 
-mysql -uroot -p < CREATE DATABASE Zun;
-mysql -uroot -p < GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'localhost' IDENTIFIED BY 'password';
-mysql -uroot -p < GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'%' IDENTIFIED BY 'password';
+sudo mysql -uroot -p < CREATE DATABASE Zun;
+sudo mysql -uroot -p < GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'localhost' IDENTIFIED BY 'password';
+sudo mysql -uroot -p < GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'%' IDENTIFIED BY 'password';
 
-echo "Zun Database Created"
-echo "2-3. Setting Up Zun User Credentials"
+#echo "Zun Database Created"
+#echo "2-3. Setting Up Zun User Credentials"
 
-source /root/setup/admin-openrc.sh
+sudo source /root/setup/admin-openrc.sh
 
-openstack user create --domain default --password-prompt password
-openstack role add --project service --user zun admin
-openstack service create --name zun --description "Container Service" container
+sudo openstack user create --domain default --password-prompt password
+sudo openstack role add --project service --user zun admin
+sudo openstack service create --name zun --description "Container Service" container
 
-echo "User Credentials Created"
-echo "4. Setting Up Zun Services"
+#echo "User Credentials Created"
+#echo "4. Setting Up Zun Services"
 
-openstack endpoint create --region RegionOne container public http://controller:9517/v1
-openstack endpoint create --region RegionOne container internal http://controller:9517/v1
-openstack endpoint create --region RegionOne container admin http://controller:9517/v1
+sudo openstack endpoint create --region RegionOne container public http://controller:9517/v1
+sudo openstack endpoint create --region RegionOne container internal http://controller:9517/v1
+sudo openstack endpoint create --region RegionOne container admin http://controller:9517/v1
 
-echo "Services Created"
+#echo "Services Created"
 
-echo "Creating Components"
-echo "1. Creating User and Directories"
+#echo "Creating Components"
+#echo "1. Creating User and Directories"
 
-groupadd --system zun
-useradd --home-dir "/var/lib/zun" --create-home --system --shell /bin/false -g zun zun
-mkdir -p /etc/zun
-chwon zun:zun /etc/zun
+sudo groupadd --system zun
+sudo useradd --home-dir "/var/lib/zun" --create-home --system --shell /bin/false -g zun zun
+sudo mkdir -p /etc/zun
+sudo chwon zun:zun /etc/zun
 
-echo "User and Directories Created"
-echo "2. Installing Python"
+#echo "User and Directories Created"
+#echo "2. Installing Python"
 
-apt-get install python-pip git -y
+sudo apt-get install python-pip git -y
 
-echo "3. Installing Zun"
+#echo "3. Installing Zun"
 
-git clone https://git.openstack.org/openstack/zun.git /var/lib/zun
-chown -R zun:zun zun
-cd zun
-pip install -r requirements.txt
-python setup.py install
+sudo git clone https://git.openstack.org/openstack/zun.git /var/lib/zun
+sudo chown -R zun:zun zun
+#cd zun
+sudo pip install -r /var/lib/zun/requirements.txt
+sudo python setup.py install
 
-echo "5. Copying api-paste.ini"
+#echo "5. Copying api-paste.ini"
 
-su -s /bin/sh -c "cp etc/zun/api-paste.ini /etc/zun" zun
+sudo su -s /bin/sh -c "cp etc/zun/api-paste.ini /etc/zun" zun
 
-echo "7. Populating Zun Database"
-su -s /bin/sh -c "zun-db-manage upgrade" zun
+#echo "7. Populating Zun Database"
+sudo su -s /bin/sh -c "zun-db-manage upgrade" zun
 
-echo "Finalizing Installation and Creating Configs"
+#echo "Finalizing Installation and Creating Configs"
 
 echo "[Unit]\n Description = Openstack Container Service API\n\n[Service]\nExecStart = /usr/local/bin/zun-api\nUser = zun\n\n[Install]\nWantedBy = multi-user.target" > /etc/systemd/system/zun-api.service
-echo "[Unit]\nDescription = Openstack Container Service Websocket Proxy\n[Service]\nExecStart = /usr/local/bin/zun-wsproxy\nUser = zun\n\n[Install]\nWantedBy = multi-user.target"
+echo "[Unit]\nDescription = Openstack Container Service Websocket Proxy\n[Service]\nExecStart = /usr/local/bin/zun-wsproxy\nUser = zun\n\n[Install]\nWantedBy = multi-user.target" > etc/systemd/system/zun-wsproxy.service
 
-systemctl enable zun-api
-systemctl enable zun-wsproxy
+sudo systemctl enable zun-api
+sudo systemctl enable zun-wsproxy
 
-systemctl start zun-api
-systemctl start zun-wsproxy
+sudo systemctl start zun-api
+sudo systemctl start zun-wsproxy
 
 echo "***"
 echo "*** Done with OpenStack Setup!"
