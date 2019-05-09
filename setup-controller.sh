@@ -4473,15 +4473,15 @@ openstack server create --flavor m1.medium --security-group $security_id --image
 #echo "1. Beginning Zun Database Setup"
 
 echo "CREATE DATABASE Zun" | mysql -u root --password="$DB_ROOT_PASS"
-echo "GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'localhost' IDENTIFIED BY 'password'" | mysql -u root --password="$DB_ROOT_PASS"
-echo "GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'%' IDENTIFIED BY 'password'"  | mysql -u root --password="$DB_ROOT_PASS"
+echo "GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'localhost' IDENTIFIED BY '$PSWDGEN'" | mysql -u root --password="$DB_ROOT_PASS"
+echo "GRANT ALL PRIVILEGES ON zun.* TO 'zun'@'%' IDENTIFIED BY '$PSWDGEN'"  | mysql -u root --password="$DB_ROOT_PASS"
 
 #echo "Zun Database Created"
 #echo "2-3. Setting Up Zun User Credentials"
 
 source /root/setup/admin-openrc.sh
 
-__openstack user create $DOMARG --domain default --password password zun
+__openstack user create $DOMARG --domain default --password $PSWDGEN zun
 __openstack role add --project service --user zun admin
 __openstack service create --name zun --description "Container Service" container
 
@@ -4510,7 +4510,7 @@ apt-get install python-pip git -y
 #echo "3. Installing Zun"
 
 git clone https://git.openstack.org/openstack/zun.git /var/lib/zun
-chown -R zun:zun zun
+chown -R zun:zun /var/lib/zun
 #cd zun
 pip install -r /var/lib/zun/requirements.txt
 python setup.py install
