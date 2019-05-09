@@ -564,7 +564,7 @@ else:
 # Construct the disk image URNs we're going to set the various nodes to load.
 #
 image_project = 'emulab-ops'
-image_urn = 'utah.cloudlab.us'
+image_urn = 'emulab.net'
 image_tag_rel = ''
 if params.release == "juno":
     image_os = 'UBUNTU14-10-64'
