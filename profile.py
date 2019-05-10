@@ -596,10 +596,9 @@ if params.fromScratch:
     image_tag_cp = 'STD'
     image_tag_rel = ''
 else:
-    image_tag_cn = 'STD'
-    image_tag_nm = 'STD'
-    image_tag_cp = 'STD'
-    image_tag_rel = ''
+   image_tag_cn = 'OSCN'
+    image_tag_nm = 'OSNM'
+    image_tag_cp = 'OSCP'
     pass
 
 nodes = dict({})
